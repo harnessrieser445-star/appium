@@ -1,0 +1,42 @@
+# Appium自动化测试平台 - 依赖锁定文件
+# 生成时间: 2026-08-08
+# Phase 1.1 数据库基础设施
+# Python版本: 3.12.10 (venv)
+#
+# 此文件记录当前稳定环境中所有依赖的精确版本，用于环境复现。
+# 新增/升级依赖必须在对应Phase执行，并更新此文件。
+#
+# 用法: pip install -r requirements.lock
+
+Appium-Python-Client==5.0.0
+attrs==26.1.0
+blinker==1.9.0
+certifi==2026.7.22
+cffi==2.1.1
+click==8.4.2
+colorama==0.4.6
+Flask==3.0.3
+Flask-SQLAlchemy==3.1.1
+greenlet==3.5.4
+h11==0.16.0
+idna==3.18
+itsdangerous==2.2.0
+Jinja2==3.1.6
+lxml==5.2.1
+MarkupSafe==3.0.3
+outcome==1.3.0.post0
+pillow==10.3.0
+pycparser==3.0
+PySocks==1.7.1
+PyYAML==6.0.1
+selenium==4.46.0
+sniffio==1.3.1
+sortedcontainers==2.4.0
+SQLAlchemy==2.0.51
+trio==0.33.0
+trio-websocket==0.12.2
+typing_extensions==4.16.0
+urllib3==2.7.0
+websocket-client==1.9.0
+Werkzeug==3.1.8
+wsproto==1.3.2

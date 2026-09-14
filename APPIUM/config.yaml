@@ -1,0 +1,35 @@
+app:
+  host: "127.0.0.1"
+  port: 5001
+  debug: false
+
+auto_refresh:
+  default_interval: 2000  # 默认刷新间隔（毫秒）
+  min_interval: 1000      # 最小刷新间隔
+  max_interval: 10000     # 最大刷新间隔
+
+appium:
+  host: "127.0.0.1"
+  port: 4723
+  platform_name: "Android"
+  automation_name: "UiAutomator2"
+  new_command_timeout: 1800  # Session 空闲超时（秒），超时后 Appium 自动关闭会话；AI 长流程需 >=1800
+  default_capabilities:
+    platformName: "Android"
+    automationName: "UiAutomator2"
+    noReset: true
+    newCommandTimeout: 1800
+
+# 连接保活配置
+keepalive:
+  enabled: true                # 是否启用心跳保活
+  interval: 60                 # 心跳间隔（秒），必须小于 new_command_timeout
+  auto_reconnect: true         # Session 断开后是否自动重连
+  max_reconnect_attempts: 3    # 最大重连尝试次数
+  reconnect_delay: 5           # 每次重连之间的等待时间（秒）
+  probe_fail_threshold: 2      # 探针连续失败多少次才判定会话死亡（status探针与心跳探针共用计数，防抖）
+  max_recovery_rounds: 3       # 恢复熔断：累计多少轮恢复失败后进 recovery_exhausted 终态，停止自动重试等人工 connect
+
+# 数据库配置
+database:
+  enabled: true                # 是否启用SQLite数据库持久化（false=仅JSON文件）

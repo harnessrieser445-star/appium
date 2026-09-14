@@ -1,0 +1,27 @@
+# 环境与依赖（可再生）
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+
+# 运行时产物
+data/logs/
+data/backups/
+data/exports/
+data/screenshots/*.png
+data/test_screenshots/
+*.log
+
+# 二进制工具链（体积大，可重新下载）
+android-sdk/
+bin/
+
+# 共享缓存
+.trae-html-share-packages/
+
+# 系统
+Thumbs.db
+.DS_Store
+Desktop.ini
+node_modules/

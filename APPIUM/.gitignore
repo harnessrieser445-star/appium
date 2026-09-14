@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# pytest
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Trae
+.trae-html-share-packages/
+.trae/
+
+# Data directories (runtime generated)
+data/logs/
+data/backups/
+data/screenshots/*.png
+data/test_screenshots/*.png
+data/generated_scripts/*.py
+data/test_cases/*.json
+
+# Old legacy directories (kept for reference but not tracked)
+generated_scripts/
+uploads/
+test_cases/
+
+# OS
+Thumbs.db
+.DS_Store
+Desktop.ini
+
+# Node
+node_modules/

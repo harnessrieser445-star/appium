@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Appium 可视化自动化测试平台</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- 顶部连接区域（共享） -->
+        <header class="top-bar">
+            <div class="logo">Appium 自动化测试平台</div>
+            <div class="connection-area">
+                <div class="status-indicator" id="status-indicator"></div>
+                <span class="status-text" id="status-text">未连接</span>
+                <span class="device-name" id="device-name"></span>
+                <div class="connect-method-group" id="connect-method-group">
+                    <label class="radio-label">
+                        <input type="radio" name="connect-method" value="usb" checked> USB
+                    </label>
+                    <label class="radio-label">
+                        <input type="radio" name="connect-method" value="wifi"> WiFi
+                    </label>
+                </div>
+                <input type="text" id="input-device-usb" class="device-input"
+                       placeholder="UDID（可留空用第一个）"
+                       title="USB 模式：填写设备 UDID，留空则使用第一个可用设备">
+                <input type="text" id="input-device-wifi" class="device-input"
+                       placeholder="IP:端口 如 192.168.1.100:5555"
+                       title="WiFi 模式：填写设备 IP 和端口"
+                       style="display:none;">
+                <input type="text" id="input-pair-code" class="device-input pair-code-input"
+                       placeholder="配对码"
+                       title="Android 11+ 无线调试配对码"
+                       style="display:none; max-width: 160px;">
+                <button class="btn btn-primary" id="btn-connect">连接设备</button>
+                <button class="btn btn-danger" id="btn-disconnect" disabled>断开</button>
+                <button class="btn btn-secondary" id="btn-mock">启用模拟模式</button>
+                <span class="mode-indicator" id="mode-indicator"></span>
+            </div>
+        </header>
+
+        <!-- 标签页导航 -->
+        <nav class="tab-nav">
+            <button class="tab-btn active" data-tab="tab1">
+                <span class="tab-icon">&#128269;</span> 元素抓取
+            </button>
+            <button class="tab-btn" data-tab="tab2">
+                <span class="tab-icon">&#9999;</span> 脚本编排
+                <span class="tab-badge" id="tab2-badge" style="display:none;">0</span>
+            </button>
+            <button class="tab-btn" data-tab="tab3">
+                <span class="tab-icon">&#9881;</span> 脚本生成
+            </button>
+        </nav>
+
+        <!-- ==================== Tab1: 元素抓取 ==================== -->
+        <div class="tab-content active" id="tab1">
+            <main class="main-content">
+                <!-- 左侧截图区域 -->
+                <section class="left-panel">
+                    <div class="panel-header">
+                        <h3>设备截图</h3>
+                        <div class="panel-header-actions">
+                            <label class="auto-refresh-label">
+                                <input type="checkbox" id="auto-refresh-toggle"> 自动刷新
+                            </label>
+                            <select id="auto-refresh-interval" class="interval-select" disabled>
+                                <option value="1000">1秒</option>
+                                <option value="2000" selected>2秒</option>
+                                <option value="3000">3秒</option>
+                                <option value="5000">5秒</option>
+                                <option value="10000">10秒</option>
+                            </select>
+                            <button class="btn btn-small" id="btn-refresh-screenshot">刷新截图</button>
+                        </div>
+                    </div>
+                    <div class="screenshot-container" id="screenshot-container">
+                        <div class="placeholder-box">
+                            <p>暂无截图</p>
+                            <p class="placeholder-hint">连接设备后点击"刷新截图"</p>
+                        </div>
+                        <img id="screenshot-img" src="" alt="screenshot" style="display:none;">
+                    </div>
+                </section>
+
+                <!-- 右侧元素区域 -->
+                <section class="right-panel">
+                    <div class="panel-header">
+                        <h3>元素列表</h3>
+                        <button class="btn btn-small" id="btn-refresh-elements">获取元素数据</button>
+                    </div>
+                    <div class="elements-container" id="elements-container">
+                        <div class="placeholder-box">
+                            <p>暂无元素数据</p>
+                            <p class="placeholder-hint">点击"获取元素数据"加载</p>
+                        </div>
+                        <ul class="element-list" id="element-list" style="display:none;"></ul>
+                    </div>
+                </section>
+            </main>
+
+            <!-- 底部详情面板（增加"发送到编排"按钮） -->
+            <aside class="detail-panel" id="detail-panel" style="display:none;">
+                <div class="detail-header">
+                    <h4>元素详情</h4>
+                    <div class="detail-header-actions">
+                        <button class="btn btn-primary btn-small" id="btn-send-to-design">发送到脚本编排 &rarr;</button>
+                        <button class="btn btn-small btn-close" id="btn-close-detail">关闭</button>
+                    </div>
+                </div>
+                <div class="detail-content" id="detail-content"></div>
+                <div class="locator-section">
+                    <h5>定位器</h5>
+                    <div class="locator-item">
+                        <label>xpath</label>
+                        <input type="text" id="locator-xpath" readonly>
+                        <button class="btn btn-copy" data-target="locator-xpath">复制</button>
+                    </div>
+                    <div class="locator-item">
+                        <label>id</label>
+                        <input type="text" id="locator-id" readonly>
+                        <button class="btn btn-copy" data-target="locator-id">复制</button>
+                    </div>
+                    <div class="locator-item">
+                        <label>content-desc</label>
+                        <input type="text" id="locator-content-desc" readonly>
+                        <button class="btn btn-copy" data-target="locator-content-desc">复制</button>
+                    </div>
+                </div>
+            </aside>
+        </div>
+
+        <!-- ==================== Tab2: 脚本编排 ==================== -->
+        <div class="tab-content" id="tab2">
+            <div class="design-layout">
+                <!-- 左侧：设计元素列表 -->
+                <section class="design-left-panel">
+                    <div class="panel-header">
+                        <h3>设计元素</h3>
+                        <div class="panel-header-actions">
+                            <button class="btn btn-small" id="btn-design-refresh-elems">刷新</button>
+                            <button class="btn btn-small btn-danger" id="btn-design-clear-elems">清空</button>
+                        </div>
+                    </div>
+                    <div class="design-elems-container" id="design-elems-container">
+                        <div class="placeholder-box">
+                            <p>暂无设计元素</p>
+                            <p class="placeholder-hint">在「元素抓取」Tab 选中元素后点击"发送到脚本编排"</p>
+                        </div>
+                        <ul class="element-list" id="design-elem-list" style="display:none;"></ul>
+                    </div>
+                </section>
+
+                <!-- 中间：步骤构建器 -->
+                <section class="design-center-panel">
+                    <div class="panel-header">
+                        <h3>步骤构建器</h3>
+                    </div>
+                    <div class="step-builder">
+                        <div class="form-group">
+                            <label>目标元素</label>
+                            <select id="step-element-select" class="form-select">
+                                <option value="">-- 无元素（wait/back/screenshot） --</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>动作类型</label>
+                            <select id="step-action-select" class="form-select">
+                                <option value="click">click - 点击元素</option>
+                                <option value="input">input - 输入文本</option>
+                                <option value="swipe">swipe - 滑动屏幕</option>
+                                <option value="press_hold">press_hold - 摇杆按住保持</option>
+                                <option value="wait">wait - 等待</option>
+                                <option value="back">back - 按返回键</option>
+                                <option value="screenshot">screenshot - 截图</option>
+                            </select>
+                        </div>
+                        <div class="form-group" id="param-input-group" style="display:none;">
+                            <label>输入文本</label>
+                            <input type="text" id="param-input-value" class="form-input" placeholder="请输入要填写的文本">
+                        </div>
+                        <div class="form-group" id="param-swipe-group" style="display:none;">
+                            <label>滑动方向</label>
+                            <select id="param-swipe-direction" class="form-select">
+                                <option value="up">up - 上滑</option>
+                                <option value="down">down - 下滑</option>
+                                <option value="left">left - 左滑</option>
+                                <option value="right">right - 右滑</option>
+                            </select>
+                        </div>
+                        <div id="param-presshold-group" style="display:none;">
+                            <div class="form-group">
+                                <label>摇杆方向</label>
+                                <select id="param-presshold-direction" class="form-select">
+                                    <option value="up">up - 前进</option>
+                                    <option value="down">down - 后退</option>
+                                    <option value="left">left - 左转</option>
+                                    <option value="right">right - 右转</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>保持时长（秒）</label>
+                                <input type="number" id="param-presshold-hold" class="form-input" value="1" min="0.3" max="60" step="0.1">
+                            </div>
+                            <div class="form-group">
+                                <label>偏转强度（0.1-1.0）</label>
+                                <input type="number" id="param-presshold-strength" class="form-input" value="0.8" min="0.1" max="1" step="0.1">
+                            </div>
+                        </div>
+                        <div class="form-group" id="param-wait-group" style="display:none;">
+                            <label>等待时间（秒）</label>
+                            <input type="number" id="param-wait-timeout" class="form-input" value="3" min="1" max="120">
+                        </div>
+                        <div class="form-group">
+                            <label>步骤描述（可选）</label>
+                            <input type="text" id="step-description" class="form-input" placeholder="例如：输入用户名">
+                        </div>
+                        <div class="form-actions">
+                            <button class="btn btn-primary" id="btn-add-step">添加步骤</button>
+                            <button class="btn btn-secondary" id="btn-update-step" style="display:none;">保存修改</button>
+                            <button class="btn btn-small" id="btn-cancel-edit" style="display:none;">取消编辑</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 右侧：步骤列表 -->
+                <section class="design-right-panel">
+                    <div class="panel-header">
+                        <h3>步骤列表</h3>
+                        <div class="panel-header-actions">
+                            <button class="btn btn-small" id="btn-design-refresh-steps">刷新</button>
+                        </div>
+                    </div>
+                    <div class="steps-container" id="steps-container">
+                        <div class="placeholder-box">
+                            <p>暂无步骤</p>
+                            <p class="placeholder-hint">使用步骤构建器添加测试步骤</p>
+                        </div>
+                        <ul class="step-list" id="step-list" style="display:none;"></ul>
+                    </div>
+                    <div class="case-actions">
+                        <input type="text" id="case-name-input" class="form-input" placeholder="用例名称">
+                        <button class="btn btn-primary btn-small" id="btn-save-case">保存用例</button>
+                        <button class="btn btn-small" id="btn-load-case">加载用例</button>
+                        <button class="btn btn-small btn-danger" id="btn-clear-design">清空全部</button>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- ==================== Tab3: 脚本生成 ==================== -->
+        <div class="tab-content" id="tab3">
+            <div class="gen-layout">
+                <div class="panel-header">
+                    <h3>脚本生成与执行</h3>
+                    <div class="panel-header-actions">
+                        <button class="btn btn-small" id="btn-gen-refresh">刷新预览</button>
+                        <button class="btn btn-primary btn-small" id="btn-gen-download">下载脚本</button>
+                        <button class="btn btn-success btn-small" id="btn-gen-execute" disabled>执行测试</button>
+                    </div>
+                </div>
+                <div class="gen-content">
+                    <div class="gen-placeholder" id="gen-placeholder">
+                        <p style="font-size: 48px; margin-bottom: 16px;">&#9881;</p>
+                        <p>暂无脚本</p>
+                        <p class="placeholder-hint">请先在「脚本编排」中完成测试步骤设计</p>
+                    </div>
+                    <pre class="gen-code-preview" id="gen-code-preview" style="display:none;"></pre>
+                </div>
+                <!-- 执行结果面板 -->
+                <div class="exec-results-panel" id="exec-results-panel" style="display:none;">
+                    <div class="exec-results-header">
+                        <h4>执行结果</h4>
+                        <span class="exec-summary" id="exec-summary"></span>
+                    </div>
+                    <div class="exec-results-container" id="exec-results-container"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 用例加载弹窗 -->
+    <div class="modal-overlay" id="case-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4>加载测试用例</h4>
+                <button class="btn btn-small btn-close" id="btn-close-case-modal">关闭</button>
+            </div>
+            <div class="modal-body" id="case-list-container">
+                <div class="placeholder-box">
+                    <p>暂无已保存的用例</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>
