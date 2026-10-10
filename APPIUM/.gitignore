@@ -30,6 +30,10 @@ htmlcov/
 .trae/
 
 # Data directories (runtime generated)
+data/*.db
+data/*.db-journal
+data/*.db-wal
+data/*.sqlite3
 data/logs/
 data/backups/
 data/screenshots/*.png
