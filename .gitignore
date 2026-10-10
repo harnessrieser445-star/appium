@@ -20,6 +20,9 @@ bin/
 # 共享缓存
 .trae-html-share-packages/
 
+# Agent 工作笔记（内部记录，不入库）
+.workbuddy/
+
 # 系统
 Thumbs.db
 .DS_Store
